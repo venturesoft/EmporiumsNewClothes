@@ -1,5 +1,5 @@
-# Emporium Web's New Clothes
-Thsi is a fork of Apple's [Emporium Web](https://developer.apple.com/library/content/samplecode/EmporiumWeb/Introduction/Intro.html) simple one page site designed to show you how to request and handle Apple Pay payments on the web. 
+# Emporium's New Clothes
+This is a fork of Apple's [Emporium Web](https://developer.apple.com/library/content/samplecode/EmporiumWeb/Introduction/Intro.html) simple one page site designed to show you how to request and handle Apple Pay payments on the web. 
 
 Apple Pay on the web consists of both a client-side and server-side component. You request payment on the client, and validate yourself as a merchant on your web server. This ~~node.js~~ Go example shows you how to carry out both the payment request and the merchant validation.
 
@@ -19,10 +19,10 @@ Create your Apple Pay merchant identifier at https://developer.apple.com, and re
     openssl pkcs12 -in cert.p12 -out cert.pem -nodes -clcerts
 
 #### Set up SSL
-Apple Pay requires your site to be hosted over HTTPS. Generate your SSL certificate, and if required obtain intermediary certificates. Name the certificate bundle `bundle.crt` and name the key `private.key` and place them in a local directory e.g. `/home/user/private/EmporiumsNewClothes`
+Apple Pay requires your site to be hosted over HTTPS. Generate your SSL certificate, and if required obtain intermediary certificates. Name the certificate bundle `bundle.crt` and name the key `private.key` and place them in the same local directory e.g. `/home/user/private/EmporiumsNewClothes`
 
 #### Download the Apple domain association file
-Apple uses a file to verify ownership of your domain e.g. `apple-developer-merchantid-domain-association`. Download this file and add it to a directory named `verification` in your local directory e.g. `/home/user/private/EmporiumsNewClothes/verification`
+Apple uses a file to verify ownership of your domain e.g. `apple-developer-merchantid-domain-association`. Download this file and place it in a directory named `verification` in the local directory e.g. `/home/user/private/EmporiumsNewClothes/verification`
 
 #### Run the example    
 ```
