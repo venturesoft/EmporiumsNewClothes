@@ -11,7 +11,7 @@ This example is a self-contained project that uses ~~node.js and Express~~ Docke
 #### Generate your Apple Pay Certificates
 Apple Pay requires a merchant identifier and two certificates - a *session* certificate and a *rewrap* certificate. The merchant identifier uniquely identifies you as an Apple Pay merchant. The *rewrap* certificate is used to encrypt your Apple Pay payments, and the *session* certificate is used to authenticate your website.
 
-Create your Apple Pay merchant identifier at https://developer.apple.com, and register your web domain against it. Convert your session certificate and key to `PEM` format, and place it in this example's `Emporium/certificates` directory.
+Create your Apple Pay merchant identifier at https://developer.apple.com, and register your web domain against it. Convert your session certificate and key to `PEM` format, name it `merchant.pem`, then place it in a local directory e.g. `/home/user/private/EmporiumsNewClothes`.
 
 > NOTE
 > Session certificates must be imported to the `login` keychain so that the private key is accessible (they can then be exported in P12 format). Final conversion to PEM format can be achieved using OpenSSL
@@ -19,14 +19,20 @@ Create your Apple Pay merchant identifier at https://developer.apple.com, and re
     openssl pkcs12 -in cert.p12 -out cert.pem -nodes -clcerts
 
 #### Set up SSL
-Apple Pay requires your site to be hosted over HTTPS. Generate your SSL certificate, and place the certificate and key in this example's `Emporium/certificates` directory.
+Apple Pay requires your site to be hosted over HTTPS. Generate your SSL certificate, and if required obtain intermediary certificates. Name the certificate bundle `bundle.crt` and name the key `private.key` and place them in a local directory e.g. `/home/user/private/EmporiumsNewClothes`
+
+#### Download the Apple domain association file
+Apple uses a file to verify ownership of your domain e.g. `apple-developer-merchantid-domain-association`. Download this file and add it to a directory named `verification` in your local directory e.g. `/home/user/private/EmporiumsNewClothes/verification`
 
 #### Run the example    
 ```
-git clone https://github.com/venturesoft/emporiumsnewclothes && cd emporiumsnewclothes
-printf 'PRIVATE_DIR=%s\n' /home/user/private > .env
+git clone https://github.com/venturesoft/EmporiumsNewClothes.git && cd EmporiumsNewClothes
+printf 'PRIVATE_DIR=%s\n' /home/user/private/EmporiumsNewClothes > .env
 docker-compose build && docker-compose up
 ```
+> NOTE
+> Replace `/home/user/private/EmporiumsNewClothes` with the path to your local directory. 
+
 
 ## Resources
 A number of resources are available to help you with Apple Pay. 
