@@ -132,7 +132,7 @@ func processPayment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("\n\nprocessPayment payload:\n %s\n\n", string(payload))
+	log.Printf("processPayment payload:\n %s", string(payload))
 
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintln(w, "")

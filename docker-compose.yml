@@ -17,7 +17,5 @@ services:
 
   backend:
    build: ./Emporium/backend
-   ports:
-    - "3000:3000"
    volumes:
     - "${PRIVATE_DIR}/applepay:/applepay"

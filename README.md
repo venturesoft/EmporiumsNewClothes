@@ -18,6 +18,16 @@ Create your Apple Pay merchant identifier at https://developer.apple.com, and re
 
     openssl pkcs12 -in merchant.p12 -out merchant.pem -nodes -clcerts
 
+#### Add a merchant configuration file
+Add a file named `merchant.json` to the `applepay` local directory in the following format:
+```
+{
+	"merchantIdentifier": "<Apple Merchant ID>",
+	"displayName": "<Apple Merchant Display Name>",
+	"domainName": "<Name Of Your Domain>"
+}
+```
+
 #### Set up SSL
 Apple Pay requires your site to be hosted over HTTPS. Generate your SSL certificate, and if required obtain intermediary certificates. Name the certificate bundle `bundle.crt` and name the key `private.key` and place them both in a directory named `ssl` within the same local directory e.g. `/home/user/private/EmporiumsNewClothes/ssl`
 
