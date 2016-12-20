@@ -83,12 +83,11 @@ function applePayButtonClicked() {
 	*/
 	session.onpaymentauthorized = (event) => {
 		// Send payment for processing...
-		const payment = event.payment;
-
-		// ...return a status and display the result
-		session.completePayment(ApplePaySession.STATUS_SUCCESS);
-		alert(JSON.stringify(payment));
-
+		processPayment(event.payment).then(function(result) {
+			// ...return a status and redirect to a confirmation page
+			session.completePayment(ApplePaySession.STATUS_SUCCESS);
+			window.location.href = "/success.html";
+		});
 	}
 
 	// All our handlers are setup - start the Apple Pay payment

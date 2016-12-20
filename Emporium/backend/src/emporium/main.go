@@ -19,6 +19,7 @@ func main() {
 	}
 	log.SetOutput(logfile)
 	http.HandleFunc("/getApplePaySession", validateMerchant)
+	http.HandleFunc("/processPayment", processPayment)
 	http.ListenAndServe(":3000", nil)
 	logfile.Close()
 }
@@ -113,5 +114,27 @@ func validateMerchant(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Content-Length", fmt.Sprintf("%d", len(session)))
 	w.Write(session)
+
+}
+
+func processPayment(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	var payload []byte
+	if r.Body != nil {
+		payload, err = ioutil.ReadAll(r.Body)
+		r.Body.Close()
+	}
+	if err != nil {
+		log.Printf("error reading payload %v", err)
+		http.Error(w, "error rreading payload", http.StatusBadRequest)
+		return
+	}
+
+	log.Printf("\n\nprocessPayment payload:\n %s\n\n", string(payload))
+
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, "")
 
 }
