@@ -12,8 +12,11 @@ ADD ./src /go/src
 # either manually or with a tool like "godep".)
 RUN go install emporium
 
-# Run the emporium command by default when the container starts.
-CMD /go/bin/emporium
+# Forward logs to docker log collector
+RUN mkdir -p /var/log/emporium \
+	&& ln -sf /dev/stdout /var/log/emporium/emporium.log
 
-# Document that the service listens on port 3000.
+# Document that the service listens on port 3000
 EXPOSE 3000
+
+CMD /go/bin/emporium
