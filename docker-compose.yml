@@ -1,0 +1,24 @@
+version: '2'
+
+services:
+
+  nginx:
+   build: nginx
+   ports:
+    - "${HTTP_PORT}:80"
+    - "${HTTPS_PORT}:443"
+   depends_on:
+    - backend
+   volumes:
+     - "./Emporium/frontend/public:/www/data"
+     - "./Emporium/frontend/conf/nginx:/etc/nginx/conf.d"
+     - "${PRIVATE_DIR}/ssl:/etc/ssl"
+     - "${PRIVATE_DIR}/verification:/www/data/.well-known"
+
+  backend:
+   build: ./Emporium/backend
+   ports:
+    - "3000:3000"
+   volumes:
+    - "./logs:/logs"
+    - "${PRIVATE_DIR}/applepay:/applepay"
