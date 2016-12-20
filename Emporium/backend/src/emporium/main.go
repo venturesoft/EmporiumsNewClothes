@@ -18,12 +18,12 @@ func main() {
 		panic(err)
 	}
 	log.SetOutput(logfile)
-	http.HandleFunc("/", validate)
+	http.HandleFunc("/getApplePaySession", validateMerchant)
 	http.ListenAndServe(":3000", nil)
 	logfile.Close()
 }
 
-func validate(w http.ResponseWriter, r *http.Request) {
+func validateMerchant(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -95,8 +95,6 @@ func validate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("handling res %v", res)
-
 	// Defer closing of underlying connection so it can be re-used
 	defer func() {
 		if res != nil && res.Body != nil {
@@ -111,8 +109,6 @@ func validate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error returning response", http.StatusInternalServerError)
 		return
 	}
-
-	log.Printf("returning session %v", session)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Content-Length", fmt.Sprintf("%d", len(session)))

@@ -1,7 +1,7 @@
 /*
 Copyright (C) 2016 Apple Inc. All Rights Reserved.
 See LICENSE.txt for this sample’s licensing information
- 
+
 Abstract:
 The main client-side JS. Handles displaying the Apple Pay button and requesting a payment.
 */
@@ -10,7 +10,7 @@ The main client-side JS. Handles displaying the Apple Pay button and requesting 
 * This method is called when the page is loaded.
 * We use it to show the Apple Pay button as appropriate.
 * Here we're using the ApplePaySession.canMakePayments() method,
-* which performs a basic hardware check. 
+* which performs a basic hardware check.
 *
 * If we wanted more fine-grained control, we could use
 * ApplePaySession.canMakePaymentsWithActiveCards() instead.
@@ -39,43 +39,19 @@ function showApplePayButton() {
 */
 function applePayButtonClicked() {
 	const paymentRequest = {
-		countryCode: 'US',
-		currencyCode: 'USD',
-		shippingMethods: [
-			{
-				label: 'Free Shipping',
-				amount: '0.00',
-				identifier: 'free',
-				detail: 'Delivers in five business days',
-			},
-			{
-				label: 'Express Shipping',
-				amount: '5.00',
-				identifier: 'express',
-				detail: 'Delivers in two business days',
-			},
-		],
-
-		lineItems: [
-			{
-				label: 'Shipping',
-				amount: '0.00',
-			}
-		],
-
+		countryCode: 'GB',
+		currencyCode: 'GBP',
 		total: {
 			label: 'Apple Pay Example',
-			amount: '8.99',
+			amount: '1.99',
 		},
-
-		supportedNetworks:[ 'amex', 'discover', 'masterCard', 'visa'],
+		supportedNetworks:[ 'amex', 'masterCard', 'visa'],
 		merchantCapabilities: [ 'supports3DS' ],
-
-		requiredShippingContactFields: [ 'postalAddress', 'email' ],
+		requiredShippingContactFields: [ 'email' ],
 	};
 
 	const session = new ApplePaySession(1, paymentRequest);
-	
+
 	/**
 	* Merchant Validation
 	* We call our merchant session endpoint, passing the URL to use
@@ -96,21 +72,6 @@ function applePayButtonClicked() {
 	* which method was selected.
 	*/
 	session.onshippingmethodselected = (event) => {
-		const shippingCost = event.shippingMethod.identifier === 'free' ? '0.00' : '5.00';
-		const totalCost = event.shippingMethod.identifier === 'free' ? '8.99' : '13.99';
-
-		const lineItems = [
-			{
-				label: 'Shipping',
-				amount: shippingCost,
-			},
-		];
-
-		const total = {
-			label: 'Apple Pay Example',
-			amount: totalCost,
-		};
-
 		session.completeShippingMethodSelection(ApplePaySession.STATUS_SUCCESS, total, lineItems);
 	};
 
@@ -124,9 +85,10 @@ function applePayButtonClicked() {
 		// Send payment for processing...
 		const payment = event.payment;
 
-		// ...return a status and redirect to a confirmation page
+		// ...return a status and display the result
 		session.completePayment(ApplePaySession.STATUS_SUCCESS);
-		window.location.href = "/success.html";
+		alert(JSON.stringify(payment));
+
 	}
 
 	// All our handlers are setup - start the Apple Pay payment
