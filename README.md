@@ -43,6 +43,18 @@ docker-compose build && docker-compose up
 > NOTE
 > Replace `/Users/darcy/private/EmporiumsNewClothes` with the path to your local directory and if required specify different ports for HTTP/HTTPS
 
+## Testing Apple Pay transactions
+See the following guide for testing Apple Pay transactions - https://developer.apple.com/support/apple-pay-sandbox/
+
+### Payment Processing
+The default setup for the project will not process the Apple Pay transactions - the [payment](https://developer.apple.com/reference/applepayjs/payment) object will simply be logged in the backend.
+
+To extend this default behaviour and submit the payment for processing by a Payment Gateway follow the appropriate providers instructions below:
+
+### Worldpay Corporate Gateway
+
+
+
 
 ## Resources
 A number of resources are available to help you with Apple Pay.
