@@ -50,16 +50,13 @@ func init() {
     <paymentService version="1.4" merchantCode="{{ .MerchantCode }}">
     <submit>
     <order orderCode="{{ .OrderCode }}" shopperLanguageCode="{{ .ShopperLanguageCode }}"
-    <description>{{ .OrderDescription: }}</description>
+    <description>{{ .OrderDescription }}</description>
     <amount value="{{ .AmountValue }}" currencyCode="{{ .AmountCurrencyCode }}" exponent="{{ .AmountExponent }}"/>
-    <
-    orderContent>
+    <orderContent>
     <![CDATA[]]>
     </orderContent>
     <paymentDetails>
-    <APPLEPAY
-    -
-    SSL>
+    <APPLEPAY-SSL>
     <header>
     <ephemeralPublicKey>{{ .Token.PaymentData.Header.EphemeralPublicKey }}</ephemeralPublicKey>
     <publicKeyHash>{{ .Token.PaymentData.Header.PublicKeyHash }}</publicKeyHash>
