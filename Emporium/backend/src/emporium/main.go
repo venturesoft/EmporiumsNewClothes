@@ -139,8 +139,9 @@ func processPayment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	merchantCode := os.Getenv("WAP_MERCHANT")
+	creds := os.Getenv("WAP_AUTH")
 
-	log.Printf("wap processing result :\n %s", wapProcess(merchantCode, payload))
+	log.Printf("wap processing result :\n %s", wapProcess(merchantCode, creds, payload))
 
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintln(w, "")

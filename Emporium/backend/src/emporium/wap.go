@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 	"text/template"
 )
 
@@ -74,7 +75,7 @@ func init() {
     `)
 }
 
-func wapProcess(merchantcode string, payload json.RawMessage) string {
+func wapProcess(merchantcode string, creds string, payload json.RawMessage) string {
 	log.Printf("payload:\n %s", string(payload))
 
 	var trans wapTransaction
@@ -101,12 +102,20 @@ func wapProcess(merchantcode string, payload json.RawMessage) string {
 
 	log.Printf("wap request:\n %s", string(wapRequest.Bytes()))
 
+	parts := strings.Split(creds, ":")
+	if len(parts) < 2 || parts[0] == "" || parts[1] == "" {
+		log.Printf("error reading wap creds")
+		return "error reading wap creds"
+	}
+	user := parts[0]
+	password := parts[1]
+
 	req, err := http.NewRequest("POST", "https://secure.worldpay.com/jsp/merchant/xml/paymentService.jsp", &wapRequest)
 	if err != nil {
 		log.Printf("error preparing wap request %v", err)
 		return "error preparing wap request"
 	}
-	// req.SetBasicAuth("username", "password")
+	req.SetBasicAuth(user, password)
 
 	client := &http.Client{}
 	res, err := client.Do(req)
