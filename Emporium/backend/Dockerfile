@@ -19,4 +19,4 @@ RUN mkdir -p /var/log/emporium \
 # Document that the service listens on port 3000
 EXPOSE 3000
 
-CMD /go/bin/emporium
+CMD export WAP_MERCHANT="${WAP_MERCHANT}" && WAP_AUTH="${WAP_AUTH}" && /go/bin/emporium

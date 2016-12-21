@@ -17,5 +17,8 @@ services:
 
   backend:
    build: ./Emporium/backend
+   environment:
+    - WAP_MERCHANT="${WAP_MERCHANT}"
+    - WAP_AUTH="${WAP_AUTH}"
    volumes:
     - "${PRIVATE_DIR}/applepay:/applepay"

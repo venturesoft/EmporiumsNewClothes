@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
@@ -124,7 +125,27 @@ func wapProcess(merchantcode string, creds string, payload json.RawMessage) stri
 		return "error transporting  wap request"
 	}
 
+	if res.StatusCode != http.StatusOK {
+		log.Printf("error status when transporting wap request %s", res.Status)
+		return "error status when transporting wap request"
+	}
+
+	// Defer closing of underlying connection so it can be re-used
+	defer func() {
+		if res != nil && res.Body != nil {
+			res.Body.Close()
+		}
+	}()
+
+	var body []byte
+	body, err = ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Printf("error returning wap response %v", err)
+		return "error returning wap response"
+	}
+
 	log.Printf("wap response:\n %v", res)
+	log.Printf("wap response body:\n %s", string(body))
 
 	return "TODO"
 }
