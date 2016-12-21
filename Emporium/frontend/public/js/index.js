@@ -82,9 +82,18 @@ function applePayButtonClicked() {
 	* status in session.completePayment()
 	*/
 	session.onpaymentauthorized = (event) => {
-		if (event.payment && event.payment.token) {
+		if (event.payment) {
+			var transaction = {
+				Payment: event.payment,
+				OrderCode: "TEST",
+				OrderDescription: "Donation",
+				ShopperLanguageCode: "en",
+				AmountValue: "199",
+				AmountCurrencyCode: "GBP",
+				AmountExponent: "2"
+			}
 			// Send payment for processing...
-			processPayment(event.payment.token).then(function(result) {
+			processPayment(transaction).then(function(result) {
 				// ...return a status and redirect to a confirmation page
 				session.completePayment(ApplePaySession.STATUS_SUCCESS);
 				window.location.href = "/success.html";
