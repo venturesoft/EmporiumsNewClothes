@@ -31,7 +31,7 @@ function getApplePaySession(url) {
   });
 }
 
-function processPayment(payment) {
+function processPayment(token) {
   return new Promise(function (resolve, reject) {
     var xhr = new XMLHttpRequest();
     xhr.open('POST', '/processPayment');
@@ -52,6 +52,6 @@ function processPayment(payment) {
       });
     };
     xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.send(JSON.stringify({payment: payment}));
+    xhr.send(JSON.stringify(token));
   });
 }

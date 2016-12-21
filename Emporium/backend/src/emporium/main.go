@@ -12,6 +12,9 @@ import (
 	"os"
 )
 
+type PaymentToken struct {
+}
+
 func main() {
 	logfile, err := os.OpenFile("/var/log/emporium/emporium.log", os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
 	if err != nil {
@@ -133,6 +136,8 @@ func processPayment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("processPayment payload:\n %s", string(payload))
+
+	log.Printf("wap processing:\n %s", wapProcess(payload))
 
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintln(w, "")

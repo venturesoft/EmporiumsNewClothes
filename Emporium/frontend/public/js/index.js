@@ -82,12 +82,16 @@ function applePayButtonClicked() {
 	* status in session.completePayment()
 	*/
 	session.onpaymentauthorized = (event) => {
-		// Send payment for processing...
-		processPayment(event.payment).then(function(result) {
-			// ...return a status and redirect to a confirmation page
-			session.completePayment(ApplePaySession.STATUS_SUCCESS);
-			window.location.href = "/success.html";
-		});
+		if event.payment && event.payment.token {
+			// Send payment for processing...
+			processPayment(event.payment.token).then(function(result) {
+				// ...return a status and redirect to a confirmation page
+				session.completePayment(ApplePaySession.STATUS_SUCCESS);
+				window.location.href = "/success.html";
+			});
+		} else {
+			alert("Unexpected payment event: " + JSON.stringify(event));
+		}
 	}
 
 	// All our handlers are setup - start the Apple Pay payment
