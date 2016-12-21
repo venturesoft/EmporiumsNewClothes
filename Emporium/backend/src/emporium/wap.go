@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"log"
+	"net/http"
 	"text/template"
 )
 
@@ -37,7 +38,7 @@ type wapTransaction struct {
 	AmountValue         string
 	AmountCurrencyCode  string
 	AmountExponent      string
-	merchantCode        string
+	MerchantCode        string
 }
 
 var wapTemplate *template.Template
@@ -45,33 +46,30 @@ var wapTemplateErr error
 
 func init() {
 	wapTemplate, wapTemplateErr = template.New("wapTemplate").Parse(`<?xml version="1.0" encoding="UTF-8"?>
-    <!DOCTYPE paymentService PUBLIC "-//WorldPay/DTD WorldPay PaymentService v1//EN"
-    http://dtd.worldpay.com/paymentService_v1.dtd">
+    <!DOCTYPE paymentService PUBLIC "-//WorldPay/DTD WorldPay PaymentService v1//EN" "http://dtd.worldpay.com/paymentService_v1.dtd">
     <paymentService version="1.4" merchantCode="{{ .MerchantCode }}">
-    <submit>
-    <order orderCode="{{ .OrderCode }}" shopperLanguageCode="{{ .ShopperLanguageCode }}"
-    <description>{{ .OrderDescription }}</description>
-    <amount value="{{ .AmountValue }}" currencyCode="{{ .AmountCurrencyCode }}" exponent="{{ .AmountExponent }}"/>
-    <orderContent>
-    <![CDATA[]]>
-    </orderContent>
-    <paymentDetails>
-    <APPLEPAY-SSL>
-    <header>
-    <ephemeralPublicKey>{{ .Token.PaymentData.Header.EphemeralPublicKey }}</ephemeralPublicKey>
-    <publicKeyHash>{{ .Token.PaymentData.Header.PublicKeyHash }}</publicKeyHash>
-    <transactionId>{{ .Token.PaymentData.Header.TransactionId }}</transactionId>
-    </header>
-    <signature>{{ .Token.PaymentData.Signature }}</signature>
-    <version>{{ .Token.PaymentData.Version }}</version>
-    <data>{{ .Token.PaymentData.Data }}</data>
-    </APPLEPAY-SSL>
-    </paymentDetails>
-    <shopper>
-    <shopperEmailAddress>{{ .ShippingContact.EmailAddress }}</shopperEmailAddress>
-    </shopper>
-    </order>
-    </submit>
+      <submit>
+        <order orderCode="{{ .OrderCode }}" shopperLanguageCode="{{ .ShopperLanguageCode }}"
+          <description>{{ .OrderDescription }}</description>
+          <amount value="{{ .AmountValue }}" currencyCode="{{ .AmountCurrencyCode }}" exponent="{{ .AmountExponent }}"/>
+          <orderContent />
+          <paymentDetails>
+            <APPLEPAY-SSL>
+            <header>
+            <ephemeralPublicKey>{{ .Payment.Token.PaymentData.Header.EphemeralPublicKey }}</ephemeralPublicKey>
+            <publicKeyHash>{{ .Payment.Token.PaymentData.Header.PublicKeyHash }}</publicKeyHash>
+            <transactionId>{{ .Payment.Token.PaymentData.Header.TransactionId }}</transactionId>
+            </header>
+            <signature>{{ .Payment.Token.PaymentData.Signature }}</signature>
+            <version>{{ .Payment.Token.PaymentData.Version }}</version>
+            <data>{{ .Payment.Token.PaymentData.Data }}</data>
+            </APPLEPAY-SSL>
+          </paymentDetails>
+          <shopper>
+            <shopperEmailAddress>{{ .Payment.ShippingContact.EmailAddress }}</shopperEmailAddress>
+          </shopper>
+        </order>
+      </submit>
     </paymentService
     `)
 }
@@ -91,7 +89,7 @@ func wapProcess(merchantcode string, payload json.RawMessage) string {
 		return "error parsing wap template"
 	}
 
-	trans.merchantCode = merchantcode
+	trans.MerchantCode = merchantcode
 	log.Printf("wap transaction:\n %v", trans)
 
 	var wapRequest bytes.Buffer
@@ -102,6 +100,22 @@ func wapProcess(merchantcode string, payload json.RawMessage) string {
 	}
 
 	log.Printf("wap request:\n %s", string(wapRequest.Bytes()))
+
+	req, err := http.NewRequest("POST", "https://secure.worldpay.com/jsp/merchant/xml/paymentService.jsp", &wapRequest)
+	if err != nil {
+		log.Printf("error preparing wap request %v", err)
+		return "error preparing wap request"
+	}
+	// req.SetBasicAuth("username", "password")
+
+	client := &http.Client{}
+	res, err := client.Do(req)
+	if err != nil {
+		log.Printf("error transporting  wap request %v", err)
+		return "error transporting  wap request"
+	}
+
+	log.Printf("wap response:\n %v", res)
 
 	return "TODO"
 }
