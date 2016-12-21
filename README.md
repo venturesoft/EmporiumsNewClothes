@@ -53,8 +53,10 @@ To extend this default behaviour and submit the payment for processing by a Paym
 
 ### Worldpay Corporate Gateway
 
-
-
+Add `WAP_MERCHANT` to the .env file to specify your Worldpay Sandbox Merchant Code and Credentials (in username:password format)
+```
+printf 'WAP_MERCHANT=%s\n' TESTMERCHANT >> .env && printf 'WAP_AUTH=%s\n' username:password >> .env
+```
 
 ## Resources
 A number of resources are available to help you with Apple Pay.

@@ -96,6 +96,12 @@ func validateMerchant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if res.StatusCode != http.StatusOK {
+		log.Printf("error status when transporting msg %s", res.Status)
+		http.Error(w, "error status when transporting msg", http.StatusInternalServerError)
+		return
+	}
+
 	// Defer closing of underlying connection so it can be re-used
 	defer func() {
 		if res != nil && res.Body != nil {
@@ -132,7 +138,9 @@ func processPayment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("wap processing result :\n %s", wapProcess(payload))
+	merchantCode := os.Getenv("WAP_MERCHANT")
+
+	log.Printf("wap processing result :\n %s", wapProcess(merchantCode, payload))
 
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintln(w, "")
