@@ -29,6 +29,16 @@ type wapTransaction struct {
 				DisplayName string `json:"displayName"`
 			} `json:"paymentMethod"`
 		} `json:"token"`
+		BillingContact struct {
+			GivenName          string   `json:"givenName"`
+			FamilyName         string   `json:"familyName"`
+			AddressLines       []string `json:"addressLines"`
+			Locality           string   `json:"locality"`
+			Country            string   `json:"country"`
+			CountryCode        string   `json:"countryCode"`
+			PostalCode         string   `json:"postalCode"`
+			AdministrativeArea string   `json:"administrativeArea"`
+		} `json:"billingContact"`
 		ShippingContact struct {
 			EmailAddress string `json:"emailAddress"`
 		} `json:"shippingContact"`
@@ -76,7 +86,6 @@ func init() {
 }
 
 func wapProcess(merchantcode string, password string, payload json.RawMessage) string {
-	log.Printf("payload:\n %s", string(payload))
 
 	var trans wapTransaction
 	err := json.Unmarshal(payload, &trans)

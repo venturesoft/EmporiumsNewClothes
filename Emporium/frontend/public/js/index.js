@@ -47,6 +47,10 @@ function applePayButtonClicked() {
 		},
 		supportedNetworks:[ 'amex', 'masterCard', 'visa'],
 		merchantCapabilities: [ 'supports3DS' ],
+		requiredBillingContactFields: [
+						"postalAddress",
+						"name"
+		],		
 		requiredShippingContactFields: [ 'email' ],
 	};
 
@@ -90,7 +94,7 @@ function applePayButtonClicked() {
 					.substring(1);
 			}
 			var orderCode = rnd() + "-" + rnd() + "-" + rnd();
-			
+
 			var transaction = {
 				Payment: event.payment,
 				OrderCode: orderCode,
