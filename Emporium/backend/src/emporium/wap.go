@@ -111,7 +111,7 @@ func wapProcess(merchantcode string, creds string, payload json.RawMessage) stri
 	user := parts[0]
 	password := parts[1]
 
-	req, err := http.NewRequest("POST", "https://secure.worldpay.com/jsp/merchant/xml/paymentService.jsp", &wapRequest)
+	req, err := http.NewRequest("POST", "https://secure-test.worldpay.com/jsp/merchant/xml/paymentService.jsp", &wapRequest)
 	if err != nil {
 		log.Printf("error preparing wap request %v", err)
 		return "error preparing wap request"
