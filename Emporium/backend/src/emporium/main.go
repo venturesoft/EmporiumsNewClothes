@@ -138,10 +138,33 @@ func processPayment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	merchantCode := os.Getenv("WAP_MERCHANT")
-	creds := os.Getenv("WAP_AUTH")
+	// check if we are setup to test worldpay integration
+	if f, err := os.Stat("/applepay/wap.json"); err == nil && !f.IsDir() {
 
-	log.Printf("wap processing result :\n %s", wapProcess(merchantCode, creds, payload))
+		data, err := ioutil.ReadFile("/applepay/wap.json")
+		if err != nil {
+			log.Printf("error reading wap configuration %v", err)
+			http.Error(w, "error reading wap configuration", http.StatusInternalServerError)
+			return
+		}
+
+		var wapconfig = struct {
+			MerchantCode string `json:"merchantCode"`
+			Password     string `json:"password"`
+		}{}
+		err = json.Unmarshal(data, &wapconfig)
+		if err == nil && (wapconfig.MerchantCode == "" || wapconfig.Password == "") {
+			err = errors.New("missing required parameters: Merchant, Password")
+		}
+		if err != nil {
+			log.Printf("error parsing wap configuration %v", err)
+			http.Error(w, "error parsing wap configuration", http.StatusBadRequest)
+			return
+		}
+
+		log.Printf("wap processing result :\n %s", wapProcess(wapconfig.MerchantCode, wapconfig.Password, payload))
+
+	}
 
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintln(w, "")

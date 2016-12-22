@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"strings"
 	"text/template"
 )
 
@@ -51,20 +50,20 @@ func init() {
     <!DOCTYPE paymentService PUBLIC "-//WorldPay/DTD WorldPay PaymentService v1//EN" "http://dtd.worldpay.com/paymentService_v1.dtd">
     <paymentService version="1.4" merchantCode="{{ .MerchantCode }}">
       <submit>
-        <order orderCode="{{ .OrderCode }}" shopperLanguageCode="{{ .ShopperLanguageCode }}"
+        <order orderCode="{{ .OrderCode }}" shopperLanguageCode="{{ .ShopperLanguageCode }}">
           <description>{{ .OrderDescription }}</description>
           <amount value="{{ .AmountValue }}" currencyCode="{{ .AmountCurrencyCode }}" exponent="{{ .AmountExponent }}"/>
           <orderContent />
           <paymentDetails>
             <APPLEPAY-SSL>
-            <header>
-            <ephemeralPublicKey>{{ .Payment.Token.PaymentData.Header.EphemeralPublicKey }}</ephemeralPublicKey>
-            <publicKeyHash>{{ .Payment.Token.PaymentData.Header.PublicKeyHash }}</publicKeyHash>
-            <transactionId>{{ .Payment.Token.PaymentData.Header.TransactionId }}</transactionId>
-            </header>
-            <signature>{{ .Payment.Token.PaymentData.Signature }}</signature>
-            <version>{{ .Payment.Token.PaymentData.Version }}</version>
-            <data>{{ .Payment.Token.PaymentData.Data }}</data>
+              <header>
+                <ephemeralPublicKey>{{ .Payment.Token.PaymentData.Header.EphemeralPublicKey }}</ephemeralPublicKey>
+                <publicKeyHash>{{ .Payment.Token.PaymentData.Header.PublicKeyHash }}</publicKeyHash>
+                <transactionId>{{ .Payment.Token.PaymentData.Header.TransactionId }}</transactionId>
+              </header>
+              <signature>{{ .Payment.Token.PaymentData.Signature }}</signature>
+              <version>{{ .Payment.Token.PaymentData.Version }}</version>
+              <data>{{ .Payment.Token.PaymentData.Data }}</data>
             </APPLEPAY-SSL>
           </paymentDetails>
           <shopper>
@@ -72,11 +71,11 @@ func init() {
           </shopper>
         </order>
       </submit>
-    </paymentService
+    </paymentService>
     `)
 }
 
-func wapProcess(merchantcode string, creds string, payload json.RawMessage) string {
+func wapProcess(merchantcode string, password string, payload json.RawMessage) string {
 	log.Printf("payload:\n %s", string(payload))
 
 	var trans wapTransaction
@@ -103,20 +102,13 @@ func wapProcess(merchantcode string, creds string, payload json.RawMessage) stri
 
 	log.Printf("wap request:\n %s", string(wapRequest.Bytes()))
 
-	parts := strings.Split(creds, ":")
-	if len(parts) < 2 || parts[0] == "" || parts[1] == "" {
-		log.Printf("error reading wap creds")
-		return "error reading wap creds"
-	}
-	user := parts[0]
-	password := parts[1]
-
 	req, err := http.NewRequest("POST", "https://secure-test.worldpay.com/jsp/merchant/xml/paymentService.jsp", &wapRequest)
 	if err != nil {
 		log.Printf("error preparing wap request %v", err)
 		return "error preparing wap request"
 	}
-	req.SetBasicAuth(user, password)
+	req.Header.Set("Content-Type", "text/xml")
+	req.SetBasicAuth(merchantcode, password)
 
 	client := &http.Client{}
 	res, err := client.Do(req)

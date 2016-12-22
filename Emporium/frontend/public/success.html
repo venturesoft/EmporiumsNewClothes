@@ -1,7 +1,7 @@
 <!--
 Copyright (C) 2016 Apple Inc. All Rights Reserved.
 See LICENSE.txt for this sample’s licensing information
- 
+
 Abstract:
 A simple confirmation page.
 -->
@@ -19,8 +19,24 @@ A simple confirmation page.
 		<div class="apple-pay">
 			<h2> Payment Success </h2>
 			<p>
-				The payment was successfully made.
+				The payment was successfully made
 			</p>
+			<script>
+				// utility function to access query string values
+				var getParameterByName = function(name, url) {
+				    if (!url) {
+				      url = window.location.href;
+				    }
+				    name = name.replace(/[\[\]]/g, "\\$&");
+				    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+				        results = regex.exec(url);
+				    if (!results) return null;
+				    if (!results[2]) return '';
+				    return decodeURIComponent(results[2].replace(/\+/g, " "));
+				};
+				var orderCode = getParameterByName("order");
+				document.write("<p>Your order code is " + orderCode + "</p>");
+			</script>
 			<p>
 				<a href="/">
 					Make another payment

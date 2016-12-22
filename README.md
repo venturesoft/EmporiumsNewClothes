@@ -51,11 +51,14 @@ The default setup for the project will not process the Apple Pay transactions - 
 
 To extend this default behaviour and submit the payment for processing by a Payment Gateway follow the appropriate providers instructions below:
 
-### Worldpay Corporate Gateway
+### Worldpay Corporate Gateway - XML Direct Integration
 
-Add `WAP_MERCHANT` to the .env file to specify your Worldpay Sandbox Merchant Code and Credentials (in username:password format)
+Add a file named `wap.json` to the `applepay` local directory in the following format:
 ```
-printf 'WAP_MERCHANT=%s\n' TESTMERCHANT >> .env && printf 'WAP_AUTH=%s\n' username:password >> .env
+{
+	"merchantCode": "<Worldpay Merchant Code>",
+	"password": "<Password for Worldpay XML Direct Integration>"
+}
 ```
 
 ## Resources

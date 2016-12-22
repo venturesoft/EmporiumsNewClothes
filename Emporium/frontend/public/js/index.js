@@ -83,9 +83,17 @@ function applePayButtonClicked() {
 	*/
 	session.onpaymentauthorized = (event) => {
 		if (event.payment) {
+			// create a random order code for testing purposes...
+			var rnd = function() {
+				return Math.floor((1 + Math.random()) * 0x10000)
+					.toString(16)
+					.substring(1);
+			}
+			var orderCode = rnd() + "-" + rnd() + "-" + rnd();
+			
 			var transaction = {
 				Payment: event.payment,
-				OrderCode: "TEST",
+				OrderCode: orderCode,
 				OrderDescription: "Donation",
 				ShopperLanguageCode: "en",
 				AmountValue: "199",
@@ -96,7 +104,7 @@ function applePayButtonClicked() {
 			processPayment(transaction).then(function(result) {
 				// ...return a status and redirect to a confirmation page
 				session.completePayment(ApplePaySession.STATUS_SUCCESS);
-				window.location.href = "/success.html";
+				window.location.href = "/success.html?order=" + orderCode;
 			});
 		} else {
 			alert("Unexpected payment event: " + JSON.stringify(event));
