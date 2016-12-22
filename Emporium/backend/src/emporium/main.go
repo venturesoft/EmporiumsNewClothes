@@ -134,9 +134,11 @@ func processPayment(w http.ResponseWriter, r *http.Request) {
 	}
 	if err != nil {
 		log.Printf("error reading payload %v", err)
-		http.Error(w, "error rreading payload", http.StatusBadRequest)
+		http.Error(w, "error reading payload", http.StatusBadRequest)
 		return
 	}
+
+	log.Printf("payload:\n %s", string(payload))
 
 	// check if we are setup to test worldpay integration
 	if f, err := os.Stat("/applepay/wap.json"); err == nil && !f.IsDir() {
