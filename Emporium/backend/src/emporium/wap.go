@@ -10,39 +10,7 @@ import (
 )
 
 type wapTransaction struct {
-	Payment struct {
-		Token struct {
-			PaymentData struct {
-				Data      string `json:"data"`
-				Signature string `json:"signature"`
-				Header    struct {
-					PublicKeyHash      string `json:"publicKeyHash"`
-					EphemeralPublicKey string `json:"ephemeralPublicKey"`
-					TransactionId      string `json:"transactionId"`
-				} `json:"header"`
-				Version string `json:"version"`
-			} `json:"paymentData"`
-			TransactionId string `json:"transactionId"`
-			PaymentMethod struct {
-				Network     string `json:"network"`
-				Type        string `json:"type"`
-				DisplayName string `json:"displayName"`
-			} `json:"paymentMethod"`
-		} `json:"token"`
-		BillingContact struct {
-			GivenName          string   `json:"givenName"`
-			FamilyName         string   `json:"familyName"`
-			AddressLines       []string `json:"addressLines"`
-			Locality           string   `json:"locality"`
-			Country            string   `json:"country"`
-			CountryCode        string   `json:"countryCode"`
-			PostalCode         string   `json:"postalCode"`
-			AdministrativeArea string   `json:"administrativeArea"`
-		} `json:"billingContact"`
-		ShippingContact struct {
-			EmailAddress string `json:"emailAddress"`
-		} `json:"shippingContact"`
-	}
+	Payment
 	OrderCode           string
 	OrderDescription    string
 	ShopperLanguageCode string
@@ -50,6 +18,44 @@ type wapTransaction struct {
 	AmountCurrencyCode  string
 	AmountExponent      string
 	MerchantCode        string
+}
+
+type Payment struct {
+	Token           PaymentToken   `json:"token"`
+	BillingContact  PaymentContact `json:"billingContact"`
+	ShippingContact PaymentContact `json:"shippingContact"`
+}
+
+type PaymentToken struct {
+	PaymentMethod struct {
+		Network     string `json:"network"`
+		Type        string `json:"type"`
+		DisplayName string `json:"displayName"`
+	} `json:"paymentMethod"`
+	TransactionIdentifier string `json:"transactionIdentifier"`
+	PaymentData           struct {
+		Data      string `json:"data"`
+		Signature string `json:"signature"`
+		Header    struct {
+			PublicKeyHash      string `json:"publicKeyHash"`
+			EphemeralPublicKey string `json:"ephemeralPublicKey"`
+			TransactionID      string `json:"transactionId"`
+		} `json:"header"`
+		Version string `json:"version"`
+	} `json:"paymentData"`
+}
+
+type PaymentContact struct {
+	EmailAddress       string   `json:"emailAddress"`
+	PhoneNumber        string   `json:"phoneNumber"`
+	FamilyName         string   `json:"familyName"`
+	GivenName          string   `json:"givenName"`
+	AddressLines       []string `json:"addressLines"`
+	Locality           string   `json:"locality"`
+	PostalCode         string   `json:"postalCode"`
+	AdministrativeArea string   `json:"administrativeArea"`
+	Country            string   `json:"country"`
+	CountryCode        string   `json:"countryCode"`
 }
 
 var wapTemplate *template.Template
