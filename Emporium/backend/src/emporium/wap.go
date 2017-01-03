@@ -75,7 +75,7 @@ func init() {
               <header>
                 <ephemeralPublicKey>{{ .Payment.Token.PaymentData.Header.EphemeralPublicKey }}</ephemeralPublicKey>
                 <publicKeyHash>{{ .Payment.Token.PaymentData.Header.PublicKeyHash }}</publicKeyHash>
-                <transactionId>{{ .Payment.Token.PaymentData.Header.TransactionId }}</transactionId>
+                <transactionId>{{ .Payment.Token.PaymentData.Header.TransactionID }}</transactionId>
               </header>
               <signature>{{ .Payment.Token.PaymentData.Signature }}</signature>
               <version>{{ .Payment.Token.PaymentData.Version }}</version>
