@@ -1,8 +1,6 @@
 package main
 
 import (
-	"bytes"
-	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,6 +8,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
+
+	"miranda"
 )
 
 func main() {
@@ -28,6 +29,17 @@ func validateMerchant(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
+	var carmen miranda.MerchantValidationService
+	carmen, err = miranda.CreateMerchantValidationService(30*time.Second, miranda.FileBasedMerchantValidationConfig{
+		CertFilePath:        "/applepay/merchant.pem",
+		RequestBodyFilePath: "/applepay/merchant.json",
+	})
+	if err != nil {
+		log.Printf("error creating merchant validation service %v", err)
+		http.Error(w, "invalid merchant", http.StatusInternalServerError)
+		return
+	}
+
 	var payload []byte
 	if r.Body != nil {
 		payload, err = ioutil.ReadAll(r.Body)
@@ -35,7 +47,7 @@ func validateMerchant(w http.ResponseWriter, r *http.Request) {
 	}
 	if err != nil {
 		log.Printf("error reading payload %v", err)
-		http.Error(w, "error rreading payload", http.StatusBadRequest)
+		http.Error(w, "error reading payload", http.StatusBadRequest)
 		return
 	}
 
@@ -52,68 +64,11 @@ func validateMerchant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err := ioutil.ReadFile("/applepay/merchant.json")
+	var session json.RawMessage
+	session, err = carmen.Dance(params.URL)
 	if err != nil {
-		log.Printf("error preparing message %v", err)
-		http.Error(w, "error preparing message", http.StatusInternalServerError)
-		return
-	}
-
-	var msg bytes.Buffer
-	err = json.Compact(&msg, data)
-	if err != nil {
-		log.Printf("error encoding message %v", err)
-		http.Error(w, "error encoding message", http.StatusInternalServerError)
-		return
-	}
-
-	req, err := http.NewRequest("POST", params.URL, &msg)
-	if err != nil {
-		log.Printf("error preparing request %v", err)
-		http.Error(w, "error preparing request", http.StatusInternalServerError)
-		return
-	}
-
-	cert, err := tls.LoadX509KeyPair("/applepay/merchant.pem", "/applepay/merchant.pem")
-	if err != nil {
-		log.Printf("error preparing tls %v", err)
-		http.Error(w, "error preparing tls", http.StatusInternalServerError)
-		return
-	}
-
-	tlsConfig := &tls.Config{
-		Certificates: []tls.Certificate{cert},
-	}
-
-	client := &http.Client{
-		Transport: &http.Transport{TLSClientConfig: tlsConfig},
-	}
-
-	res, err := client.Do(req)
-	if err != nil {
-		log.Printf("error transporting msg %v", err)
-		http.Error(w, "error transporting msg", http.StatusInternalServerError)
-		return
-	}
-
-	if res.StatusCode != http.StatusOK {
-		log.Printf("error status when transporting msg %s", res.Status)
-		http.Error(w, "error status when transporting msg", http.StatusInternalServerError)
-		return
-	}
-
-	// Defer closing of underlying connection so it can be re-used
-	defer func() {
-		if res != nil && res.Body != nil {
-			res.Body.Close()
-		}
-	}()
-
-	var session []byte
-	session, err = ioutil.ReadAll(res.Body)
-	if err != nil {
-		log.Printf("error returning response %v", err)
-		http.Error(w, "error returning response", http.StatusInternalServerError)
+		log.Printf("error during merchant validation dance %v", err)
+		http.Error(w, "merchant validation failed", http.StatusInternalServerError)
 		return
 	}
 
