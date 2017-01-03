@@ -10,7 +10,7 @@ import (
 )
 
 type wapTransaction struct {
-	Payment
+	Payment             Payment
 	OrderCode           string
 	OrderDescription    string
 	ShopperLanguageCode string
