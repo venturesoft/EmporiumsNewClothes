@@ -11,8 +11,8 @@ import (
 )
 
 type wapTransaction struct {
-	Payment             string // base 64 encoded JSON
-	PaymentObject       PaymentObject
+	PaymentDataEnc      string // base 64 encoded JSON
+	PaymentData         PaymentData
 	OrderCode           string
 	OrderDescription    string
 	ShopperLanguageCode string
@@ -22,42 +22,15 @@ type wapTransaction struct {
 	MerchantCode        string
 }
 
-type PaymentObject struct {
-	Token           PaymentToken   `json:"token"`
-	BillingContact  PaymentContact `json:"billingContact"`
-	ShippingContact PaymentContact `json:"shippingContact"`
-}
-
-type PaymentToken struct {
-	PaymentMethod struct {
-		Network     string `json:"network"`
-		Type        string `json:"type"`
-		DisplayName string `json:"displayName"`
-	} `json:"paymentMethod"`
-	TransactionIdentifier string `json:"transactionIdentifier"`
-	PaymentData           struct {
-		Data      string `json:"data"`
-		Signature string `json:"signature"`
-		Header    struct {
-			PublicKeyHash      string `json:"publicKeyHash"`
-			EphemeralPublicKey string `json:"ephemeralPublicKey"`
-			TransactionID      string `json:"transactionId"`
-		} `json:"header"`
-		Version string `json:"version"`
-	} `json:"paymentData"`
-}
-
-type PaymentContact struct {
-	EmailAddress       string   `json:"emailAddress"`
-	PhoneNumber        string   `json:"phoneNumber"`
-	FamilyName         string   `json:"familyName"`
-	GivenName          string   `json:"givenName"`
-	AddressLines       []string `json:"addressLines"`
-	Locality           string   `json:"locality"`
-	PostalCode         string   `json:"postalCode"`
-	AdministrativeArea string   `json:"administrativeArea"`
-	Country            string   `json:"country"`
-	CountryCode        string   `json:"countryCode"`
+type PaymentData struct {
+	Data      string `json:"data"`
+	Signature string `json:"signature"`
+	Header    struct {
+		PublicKeyHash      string `json:"publicKeyHash"`
+		EphemeralPublicKey string `json:"ephemeralPublicKey"`
+		TransactionID      string `json:"transactionId"`
+	} `json:"header"`
+	Version string `json:"version"`
 }
 
 var wapTemplate *template.Template
@@ -75,17 +48,17 @@ func init() {
           <paymentDetails>
             <APPLEPAY-SSL>
               <header>
-                <ephemeralPublicKey>{{ .PaymentObject.Token.PaymentData.Header.EphemeralPublicKey }}</ephemeralPublicKey>
-                <publicKeyHash>{{ .PaymentObject.Token.PaymentData.Header.PublicKeyHash }}</publicKeyHash>
-                <transactionId>{{ .PaymentObject.Token.PaymentData.Header.TransactionID }}</transactionId>
+                <ephemeralPublicKey>{{ .PaymentData.Header.EphemeralPublicKey }}</ephemeralPublicKey>
+                <publicKeyHash>{{ .PaymentData.Header.PublicKeyHash }}</publicKeyHash>
+                <transactionId>{{ .PaymentData.Header.TransactionID }}</transactionId>
               </header>
-              <signature>{{ .PaymentObject.Token.PaymentData.Signature }}</signature>
-              <version>{{ .PaymentObject.Token.PaymentData.Version }}</version>
-              <data>{{ .PaymentObject.Token.PaymentData.Data }}</data>
+              <signature>{{ .PaymentData.Signature }}</signature>
+              <version>{{ .PaymentData.Version }}</version>
+              <data>{{ .PaymentData.Data }}</data>
             </APPLEPAY-SSL>
           </paymentDetails>
           <shopper>
-            <shopperEmailAddress>{{ .PaymentObject.ShippingContact.EmailAddress }}</shopperEmailAddress>
+            <shopperEmailAddress>{{ .ShopperEmailAddress }}</shopperEmailAddress>
           </shopper>
         </order>
       </submit>
@@ -102,17 +75,17 @@ func wapProcess(merchantcode string, password string, payload json.RawMessage) s
 		return "error parsing wap transaction"
 	}
 
-	// decode payment object (base 64 encoded JSON)
-	paymentJSON, err := base64.StdEncoding.DecodeString(trans.Payment)
+	// decode payment data (base 64 encoded JSON)
+	paymentJSON, err := base64.StdEncoding.DecodeString(trans.PaymentDataEnc)
 	if err != nil {
-		log.Printf("error decoding payment object %v", err)
-		return "error decoding payment object"
+		log.Printf("error decoding payment data %v", err)
+		return "error decoding payment data"
 	}
 	if len(paymentJSON) > 0 {
-		err = json.Unmarshal(paymentJSON, &trans.PaymentObject)
+		err = json.Unmarshal(paymentJSON, &trans.PaymentData)
 		if err != nil {
-			log.Printf("error parsing payment object %v", err)
-			return "error parsing payment object"
+			log.Printf("error parsing payment data %v", err)
+			return "error parsing payment data"
 		}
 	}
 

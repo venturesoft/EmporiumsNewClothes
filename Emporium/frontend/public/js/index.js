@@ -95,14 +95,25 @@ function applePayButtonClicked() {
 			}
 			var orderCode = rnd() + "-" + rnd() + "-" + rnd();
 
-			// base64 encode the payment object
-			var paymentEnc = window.btoa(JSON.stringify(event.payment));
+			// if we have some payment data add it
+			var paymentDataEnc = "";
+			if (event.payment.token && event.payment.token.paymentData) {
+				// we send this as base64 encoded json
+				paymentDataEnc = window.btoa(JSON.stringify(event.payment.token.paymentData));
+			}
+
+			// add the shopper's email address if we have it
+			var shopperEmailAddress = "";
+			if (event.payment.shippingContact && event.payment.shippingContact.emailAddress) {
+				shopperEmailAddress = event.payment.shippingContact.emailAddress;
+			}
 
 			var transaction = {
-				Payment: paymentEnc,
+				PaymentDataEnc: paymentDataEnc,
 				OrderCode: orderCode,
 				OrderDescription: "Donation",
 				ShopperLanguageCode: "en",
+				ShopperEmailAddress: shopperEmailAddress,
 				AmountValue: "199",
 				AmountCurrencyCode: "GBP",
 				AmountExponent: "2"
