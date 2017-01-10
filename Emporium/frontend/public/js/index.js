@@ -50,7 +50,7 @@ function applePayButtonClicked() {
 		requiredBillingContactFields: [
 						"postalAddress",
 						"name"
-		],		
+		],
 		requiredShippingContactFields: [ 'email' ],
 	};
 
@@ -95,8 +95,11 @@ function applePayButtonClicked() {
 			}
 			var orderCode = rnd() + "-" + rnd() + "-" + rnd();
 
+			// base64 encode the payment object
+			var paymentEnc = window.btoa(JSON.stringify(event.payment));
+
 			var transaction = {
-				Payment: event.payment,
+				Payment: paymentEnc,
 				OrderCode: orderCode,
 				OrderDescription: "Donation",
 				ShopperLanguageCode: "en",

@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -10,7 +11,8 @@ import (
 )
 
 type wapTransaction struct {
-	Payment             Payment
+	Payment             string // base 64 encoded JSON
+	PaymentObject       PaymentObject
 	OrderCode           string
 	OrderDescription    string
 	ShopperLanguageCode string
@@ -20,7 +22,7 @@ type wapTransaction struct {
 	MerchantCode        string
 }
 
-type Payment struct {
+type PaymentObject struct {
 	Token           PaymentToken   `json:"token"`
 	BillingContact  PaymentContact `json:"billingContact"`
 	ShippingContact PaymentContact `json:"shippingContact"`
@@ -98,6 +100,20 @@ func wapProcess(merchantcode string, password string, payload json.RawMessage) s
 	if err != nil {
 		log.Printf("error parsing wap transaction %v", err)
 		return "error parsing wap transaction"
+	}
+
+	// decode payment object (base 64 encoded JSON)
+	paymentJSON, err := base64.StdEncoding.DecodeString(trans.Payment)
+	if err != nil {
+		log.Printf("error decoding payment object %v", err)
+		return "error decoding payment object"
+	}
+	if len(paymentJSON) > 0 {
+		err = json.Unmarshal(paymentJSON, &trans.PaymentObject)
+		if err != nil {
+			log.Printf("error parsing payment object %v", err)
+			return "error parsing payment object"
+		}
 	}
 
 	if wapTemplateErr != nil {
