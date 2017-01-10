@@ -75,17 +75,17 @@ func init() {
           <paymentDetails>
             <APPLEPAY-SSL>
               <header>
-                <ephemeralPublicKey>{{ .Payment.Token.PaymentData.Header.EphemeralPublicKey }}</ephemeralPublicKey>
-                <publicKeyHash>{{ .Payment.Token.PaymentData.Header.PublicKeyHash }}</publicKeyHash>
-                <transactionId>{{ .Payment.Token.PaymentData.Header.TransactionID }}</transactionId>
+                <ephemeralPublicKey>{{ .PaymentObject.Token.PaymentData.Header.EphemeralPublicKey }}</ephemeralPublicKey>
+                <publicKeyHash>{{ .PaymentObject.Token.PaymentData.Header.PublicKeyHash }}</publicKeyHash>
+                <transactionId>{{ .PaymentObject.Token.PaymentData.Header.TransactionID }}</transactionId>
               </header>
-              <signature>{{ .Payment.Token.PaymentData.Signature }}</signature>
-              <version>{{ .Payment.Token.PaymentData.Version }}</version>
-              <data>{{ .Payment.Token.PaymentData.Data }}</data>
+              <signature>{{ .PaymentObject.Token.PaymentData.Signature }}</signature>
+              <version>{{ .PaymentObject.Token.PaymentData.Version }}</version>
+              <data>{{ .PaymentObject.Token.PaymentData.Data }}</data>
             </APPLEPAY-SSL>
           </paymentDetails>
           <shopper>
-            <shopperEmailAddress>{{ .Payment.ShippingContact.EmailAddress }}</shopperEmailAddress>
+            <shopperEmailAddress>{{ .PaymentObject.ShippingContact.EmailAddress }}</shopperEmailAddress>
           </shopper>
         </order>
       </submit>
@@ -122,7 +122,7 @@ func wapProcess(merchantcode string, password string, payload json.RawMessage) s
 	}
 
 	trans.MerchantCode = merchantcode
-	log.Printf("wap transaction:\n %v", trans)
+	log.Printf("wap transaction:\n %#v", trans)
 
 	var wapRequest bytes.Buffer
 	err = wapTemplate.Execute(&wapRequest, trans)
