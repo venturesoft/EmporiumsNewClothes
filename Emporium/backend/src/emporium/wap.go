@@ -16,6 +16,7 @@ type wapTransaction struct {
 	OrderCode           string
 	OrderDescription    string
 	ShopperLanguageCode string
+	ShopperEmailAddress string
 	AmountValue         string
 	AmountCurrencyCode  string
 	AmountExponent      string
