@@ -27,6 +27,19 @@ func main() {
 
 func validateMerchant(w http.ResponseWriter, r *http.Request) {
 
+	// to perform merchant validation for multiple domains CORS headers could be added here
+	// e.g.
+	//	if origin := r.Header.Get("Origin"); origin != "" { // permitted origins should be checked here
+	//		w.Header().Set("Access-Control-Allow-Origin", origin)
+	//		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	//		w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+	//		if r.Method == "OPTIONS" { // handle pre-flight request
+	//			return
+	//		}
+	//	}
+	//
+	// the appropriate merchant cert and request body could then be loaded based on the origin...
+
 	var err error
 
 	var carmen miranda.MerchantValidationService
