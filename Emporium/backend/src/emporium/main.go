@@ -10,7 +10,7 @@ import (
 	"os"
 	"time"
 
-	"miranda"
+	"github.com/homemade/miranda"
 )
 
 func main() {
